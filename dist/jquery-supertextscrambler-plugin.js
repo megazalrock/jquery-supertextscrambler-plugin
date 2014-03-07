@@ -69,10 +69,10 @@
 					if(delta >= interval){
 						if(textDelta >= textInterval){
 							$target
-								.text(sts.stepText(num) + sts.getRndText(length - sts.currentTextLength - 1, mode));
+								.text(sts.stepText(num) + sts.getRndText(length - sts.currentTextLength, mode));
 						}else{
 							$target
-								.text(sts.currentText + sts.getRndText(length - sts.currentTextLength - 1, mode));
+								.text(sts.currentText + sts.getRndText(length - sts.currentTextLength, mode));
 						}
 						then = now - (delta % interval);
 						textThen = now - (textDelta % textInterval);
@@ -97,7 +97,7 @@
 	SuperTextScrambler.prototype.step = function(){
 		var sts = this;
 		sts.$target
-			.text(sts.text.slice(0, sts.currentTextLength + 1) + sts.getRndText(sts.length - sts.currentTextLength - 1, sts.options.mode));
+			.text(sts.text.slice(0, sts.currentTextLength + 1) + sts.getRndText(sts.length - sts.currentTextLength, sts.options.mode));
 
 		sts.currentTextLength += 1;
 	};
