@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width"/>
+<meta name="format-detection" content="telephone=no" />
+<link rel="stylesheet" type="text/css" href="style.css" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+<script type="text/javascript" src="../dist/jquery-supertextscrambler-plugin.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		/*var sts = $.SuperTextScrambler('TEXT TEXT TEXT');
+		sts.init($('#demo1'));
+
+		sts.step();
+		sts.step();
+		sts.step();
+		sts.step();*/
+		//console.log(sts);
+		$('#demo1')
+			.superTextScrambler({
+				mode: 'en',
+				interval: 60
+			});
+	});
+</script>
+<title>Title</title>
+</head>
+<body>
+	<p class="en text" id="demo1">TEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXT</p>
+	<p class="en text">TEXT TEXT TEXT<br>TEXT TEXT TEXT</p>
+	<p class="ja text">テキストテキスト漢字漢字てきすとてきすと</p>
+	<p class="ja text">テキストテキスト漢字漢字てきすとてきすと<br>テキストテキスト漢字漢字てきすとてきすと</p>
+</body>
+</html>
