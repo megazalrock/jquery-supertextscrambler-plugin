@@ -139,6 +139,10 @@
 		'superTextScrambler':function (options){
 			$(this)
 				.each(function(){
+					var text = $(this).text();
+					if(!String(text).length){
+						return false;
+					}
 					var sts = new SuperTextScrambler($(this).text(), options);
 					sts.init($(this));
 					sts.start();

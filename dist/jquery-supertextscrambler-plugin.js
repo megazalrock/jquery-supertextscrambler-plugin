@@ -1,4 +1,4 @@
-/*! jQuery Super Text Scrambler 2014-03-08
+/*! jQuery Super Text Scrambler 2014-03-11
  *  Vertion : 0.1.0
  *  Dependencies : jQuery *
  *  Author : MegazalRock (Otto Kamiya)
@@ -137,6 +137,10 @@
 		'superTextScrambler':function (options){
 			$(this)
 				.each(function(){
+					var text = $(this).text();
+					if(!String(text).length){
+						return false;
+					}
 					var sts = new SuperTextScrambler($(this).text(), options);
 					sts.init($(this));
 					sts.start();
