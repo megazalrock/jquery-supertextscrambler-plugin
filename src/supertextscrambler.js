@@ -48,6 +48,28 @@
 		this.currentTextLength = 0;
 		this.currentText = '';
 		this.spaceIndexList = this.allIndexOf(this.text, ' ');
+		this.charTable = {
+			kanji: {
+				startCharCode: 0x4e9c,
+				endCharCode: 0x7199
+			},
+			hiragana: {
+				startCharCode: 0x3041,
+				endCharCode: 0x3093
+			},
+			katakana:{
+				startCharCode: 0x30a1,
+				endCharCode: 0x30f6
+			},
+			keisen: {
+				startCharCode: 0x2500,
+				endCharCode: 0x2542
+			},
+			en: {
+				startCharCode: 65,
+				endCharCode: 122
+			}
+		};
 	};
 
 	SuperTextScrambler.prototype.init = function($target){
@@ -117,13 +139,11 @@
 		var sts = this;
 		var startCharCode, endCharCode , rndText = [], i = 0;
 		mode = mode || 'en';
+		if(mode.indexOf(',') !== -1){
 
-		if(mode === 'en'){
-			startCharCode = 65;
-			endCharCode = 122;
 		}else{
-			startCharCode = 0x4E00;
-			endCharCode = 0x9FA0;
+			startCharCode = sts.charTable[mode].startCharCode;
+			endCharCode = sts.charTable[mode].endCharCode;
 		}
 		for(;i < length; i ++){
 			if($.inArray(i, sts.spaceIndexList) === -1 || !sts.options.saveSpace){
