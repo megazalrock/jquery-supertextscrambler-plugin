@@ -17,21 +17,34 @@
 		sts.step();
 		sts.step();*/
 		//console.log(sts);
-		$('p')
+		$('#demo1')
 			.on('mouseover', function(){
 				$(this)
 					.superTextScrambler({
-						wait: 0
+						wait: 0,
+						textFps: 2,
+						/*fps: 2,*/
+						autoWordBreak: false,
+						saveSpace: true
 					});
 			});
+
+		$('#demo2')
+			.superTextScrambler();
 			
 	});
 </script>
+<style>
+	#demo1{
+		width: 100px;
+	}
+
+</style>
 <title>Title</title>
 </head>
 <body>
 	<p class="en text" id="demo1">TEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXT</p>
-	<p class="en text">TEXT TEXT TEXT<br>TEXT TEXT TEXT</p>
+	<p class="en text" id="demo2">TEXT TEXT TEXT<br>TEXT TEXT TEXT</p>
 	<p class="ja text">テキストテキスト漢字漢字てきすとてきすと</p>
 	<p class="ja text">テキストテキスト漢字漢字てきすとてきすと<br>テキストテキスト漢字漢字てきすとてきすと</p>
 </body>

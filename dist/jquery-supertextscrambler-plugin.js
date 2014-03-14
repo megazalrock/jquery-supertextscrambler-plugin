@@ -37,12 +37,15 @@
 			mode: 'en',
 			wait: 1000,
 			fps: 30,
-			textFps: 30
+			textFps: 30,
+			autoWordBreak: true,
+			saveSpace: true
 		}, options);
 		this.text = text;
 		this.length = text.length;
 		this.currentTextLength = 0;
 		this.currentText = '';
+		this.spaceIndexList = this.allIndexOf(this.text, ' ');
 	};
 
 	SuperTextScrambler.prototype.init = function($target){
@@ -50,6 +53,19 @@
 		sts.$target = $target;
 		sts.currentTextLength = 0;
 		sts.currentText = '';
+
+		if(sts.options.autoWordBreak){
+			sts.defaultCss = {
+				wordWrap: $target.css('word-wrap'),
+				wordBreak: $target.css('word-break')
+			};
+			$target
+				.css({
+					wordWrap: 'break-word',
+					wordBreak: 'break-all'
+				});
+		}
+
 		$target
 			.trigger('scramblerStart');
 	};
@@ -96,9 +112,9 @@
 	};
 
 	SuperTextScrambler.prototype.getRndText = function(length, mode){
-		mode = mode || 'en';
-
+		var sts = this;
 		var startCharCode, endCharCode , rndText = [], i = 0;
+		mode = mode || 'en';
 
 		if(mode === 'en'){
 			startCharCode = 65;
@@ -108,7 +124,11 @@
 			endCharCode = 0x9FA0;
 		}
 		for(;i < length; i ++){
-			rndText.push(String.fromCharCode(startCharCode + Math.floor(Math.random() * (endCharCode - startCharCode))));
+			if($.inArray(i, sts.spaceIndexList) === -1 || !sts.options.saveSpace){
+				rndText.push(String.fromCharCode(startCharCode + Math.floor(Math.random() * (endCharCode - startCharCode))));
+			}else{
+				rndText.push(' ');
+			}
 		}
 
 		return rndText.join('');
@@ -117,8 +137,20 @@
 
 	SuperTextScrambler.prototype.end = function(){
 		var sts = this;
+		if(sts.options.autoWordBreak){
+			sts.$target
+				.css(sts.defaultCss);
+		}
 		sts.$target
 			.trigger('scramblerEnd');
+	};
+
+	SuperTextScrambler.prototype.allIndexOf = function(string, needle){
+		var indices = [];
+		for(var pos = string.indexOf(needle); pos !== -1; pos = string.indexOf(needle, pos + 1)) {
+			indices.push(pos);
+		}
+		return indices;
 	};
 
 	$.extend({
