@@ -131,7 +131,7 @@
 			$(this)
 				.each(function(){
 					var $self = $(this);
-					var text = $self .text();
+					var text = $self.text();
 					if(String(text).length){
 						var sts = $self.data('SuperTextScrambler') || new SuperTextScrambler(text, options);
 						sts.init($self);
