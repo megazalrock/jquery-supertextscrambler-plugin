@@ -50,8 +50,9 @@
 	SuperTextScrambler.prototype.init = function($target){
 		var sts = this;
 		sts.$target = $target;
+		sts.currentTextLength = 0;
+		sts.currentText = '';
 		$target
-			.html('&nbsp;')
 			.trigger('scramblerStart');
 	};
 
@@ -96,14 +97,6 @@
 		return sts.currentText;
 	};
 
-	SuperTextScrambler.prototype.step = function(){
-		var sts = this;
-		sts.$target
-			.text(sts.text.slice(0, sts.currentTextLength + 1) + sts.getRndText(sts.length - sts.currentTextLength, sts.options.mode));
-
-		sts.currentTextLength += 1;
-	};
-
 	SuperTextScrambler.prototype.getRndText = function(length, mode){
 		mode = mode || 'en';
 
@@ -139,14 +132,14 @@
 		'superTextScrambler':function (options){
 			$(this)
 				.each(function(){
-					var text = $(this).text();
-					if(!String(text).length){
-						return false;
+					var $self = $(this);
+					var text = $self .text();
+					if(String(text).length){
+						var sts = $self.data('SuperTextScrambler') || new SuperTextScrambler(text, options);
+						sts.init($self);
+						sts.start();
+						$self.data('SuperTextScrambler', sts);
 					}
-					var sts = new SuperTextScrambler($(this).text(), options);
-					sts.init($(this));
-					sts.start();
-					$(this).data('SuperTextScrambler', sts);
 				});
 			return this;
 		}

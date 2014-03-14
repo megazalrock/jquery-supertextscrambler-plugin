@@ -17,11 +17,14 @@
 		sts.step();
 		sts.step();*/
 		//console.log(sts);
-		$('#demo1')
-			.superTextScrambler({
-				mode: 'en',
-				interval: 60
+		$('p')
+			.on('mouseover', function(){
+				$(this)
+					.superTextScrambler({
+						wait: 0
+					});
 			});
+			
 	});
 </script>
 <title>Title</title>
