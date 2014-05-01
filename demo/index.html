@@ -31,10 +31,17 @@
 
 		$('#demo3')
 			.superTextScrambler({
-				mode: 'en'
+				mode: 'auto'
 				//textFps:2,
 				//fps:2
 			});
+
+		$('#demo4 > p')
+			.superTextScrambler({
+				mode: 'typewriter',
+				textFps: 10
+			});
+
 			
 	});
 </script>
@@ -48,6 +55,13 @@
 <title>Title</title>
 </head>
 <body>
+	<div id="demo4" class="texts">
+		<p>TEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXT</p>
+		<p>TEXT TEXT TEXT</p>
+		<p>テキストテキスト漢字漢字てきすとて きすとテキストテキスト漢字 漢字てきすとてきすとテキ ストテキスト漢字漢字てきすとてきすとテキストテキスト漢字漢字てきすとてきすとテキストテキスト漢字漢字てきすとてきすとテキストテ キスト漢字漢字てきすとてきすと テキストテキスト漢字漢字てきすとてきすと</p>
+	</div>
+
+
 	<p class="en text" id="demo1">TEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXTTEXT TEXT TEXT</p>
 	<p class="en text" id="demo2">TEXT TEXT TEXT<br>TEXT TEXT TEXT</p>
 	<p class="ja text" id="demo3">テキストテキスト漢字漢字てきすとて きすとテキストテキスト漢字 漢字てきすとてきすとテキ ストテキスト漢字漢字てきすとてきすとテキストテキスト漢字漢字てきすとてきすとテキストテキスト漢字漢字てきすとてきすとテキストテ キスト漢字漢字てきすとてきすと テキストテキスト漢字漢字てきすとてきすと</p>

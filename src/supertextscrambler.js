@@ -32,51 +32,85 @@
 		}
 	);
 
+	var defaultOptions = {
+		mode: 'auto',
+		wait: 1000,
+		fps: 30,
+		textFps: 30,
+		autoWordBreak: true,
+		saveSpace: true,
+		returnPrimise: false,
+		addQueue: true
+	};
 
-	var SuperTextScrambler = function(text, options){
+
+	var SuperTextScrambler = function($target, text, options){
+		var i;
 		options = options || {};
-		this.options = $.extend(true, {
-			mode: 'en',
-			wait: 1000,
-			fps: 30,
-			textFps: 30,
-			autoWordBreak: true,
-			saveSpace: true
-		}, options);
+		this.options = $.extend(true, {}, $.extend(true, defaultOptions, options));
 		this.text = text;
 		this.length = text.length;
 		this.currentTextLength = 0;
 		this.currentText = '';
-		this.spaceIndexList = this.allIndexOf(this.text, ' ');
+		this.spaceIndexList = allIndexOf(this.text, ' ');
 		this.charTable = {
 			kanji: {
 				startCharCode: 0x4e9c,
-				endCharCode: 0x7199
+				endCharCode: 0x7199,
+				length: 0x7199 - 0x4e9c
 			},
 			hiragana: {
 				startCharCode: 0x3041,
-				endCharCode: 0x3093
+				endCharCode: 0x3093,
+				length: 0x3093 - 0x3041
 			},
 			katakana:{
 				startCharCode: 0x30a1,
-				endCharCode: 0x30f6
+				endCharCode: 0x30f6,
+				length: 0x30f6 - 0x30a1
 			},
+			ja: [],
 			keisen: {
 				startCharCode: 0x2500,
-				endCharCode: 0x2542
+				endCharCode: 0x2542,
+				length: 0x2542 - 0x2500
 			},
 			en: {
 				startCharCode: 65,
-				endCharCode: 122
+				endCharCode: 122,
+				length: 122 - 65
 			}
 		};
+		this.charTable.ja = [
+			this.charTable.kanji,
+			this.charTable.hiragana,
+			this.charTable.katakana
+		];
+
+		this.charTableJaLength = 0;
+
+		for(i in this.charTable.ja){
+			this.charTableJaLength += this.charTable.ja[i].length;
+		}
+
+		this.$target = $target;
 	};
 
-	SuperTextScrambler.prototype.init = function($target){
+	SuperTextScrambler.prototype.init = function(){
 		var sts = this;
-		sts.$target = $target;
+		var $target = sts.$target;
 		sts.currentTextLength = 0;
 		sts.currentText = '';
+
+		sts.deferred = $.Deferred();
+
+		if(sts.options.mode === 'auto'){
+			if(/[ぁ-ん]/.test(sts.text) || /[ァ-ン]/.test(sts.text)){
+				sts.options.mode = 'ja';
+			}else{
+				sts.options.mode = 'en';
+			}
+		}
 
 		if(sts.options.autoWordBreak){
 			sts.defaultCss = {
@@ -110,70 +144,86 @@
 					if(delta >= interval){
 						if(textDelta >= textInterval){
 							$target
-								.text(sts.stepText(num) + sts.getRndText(length - sts.currentTextLength, mode));
+								.text(stepText(sts, num) + getRndText(sts, length - sts.currentTextLength, mode));
 						}else{
 							$target
-								.text(sts.currentText + sts.getRndText(length - sts.currentTextLength, mode));
+								.text(sts.currentText + getRndText(sts, length - sts.currentTextLength, mode));
 						}
 						then = now - (delta % interval);
 						textThen = now - (textDelta % textInterval);
 					}
 				}else{
 					window.cancelAnimationFrame(sts.rafId);
-					sts.end();
+					stsEnd(sts);
 				}
 			})();
 		}, sts.options.wait);
+
+		return sts.deferred.promise();
 	};
 
-	SuperTextScrambler.prototype.stepText = function(num){
-		var sts = this, i = 0;
+	function stepText(sts, num){
+		var i = 0;
 		for(; i < num; i += 1){
 			sts.currentText = sts.text.slice(0, sts.currentTextLength + 1);
 			sts.currentTextLength = sts.currentText.length;
 		}
 		return sts.currentText;
-	};
+	}
 
-	SuperTextScrambler.prototype.getRndText = function(length, mode){
-		var sts = this;
-		var startCharCode, endCharCode , rndText = [], i = 0;
-		mode = mode || 'en';
-		if(mode.indexOf(',') !== -1){
-
-		}else{
-			startCharCode = sts.charTable[mode].startCharCode;
-			endCharCode = sts.charTable[mode].endCharCode;
-		}
-		for(;i < length; i ++){
-			if($.inArray(i, sts.spaceIndexList) === -1 || !sts.options.saveSpace){
-				rndText.push(String.fromCharCode(startCharCode + Math.floor(Math.random() * (endCharCode - startCharCode))));
+	function getRndText(sts, length, mode){
+		var rndText = [];
+		if(mode === 'typewriter'){
+			if(length % 2){
+				rndText = ['_'];
 			}else{
-				rndText.push(' ');
+				rndText = [' ', '|', ' '];
+			}
+			if(length < 2){
+				rndText = rndText.splice(0, rndText.length - (2 - length));
+			}
+		}else{
+			var startCharCode, endCharCode, i = 0, charTableIndex, isCharTableArray = $.isArray(sts.charTable[mode]);
+
+			if(!isCharTableArray){
+				startCharCode = sts.charTable[mode].startCharCode;
+				endCharCode = sts.charTable[mode].endCharCode;
+			}
+
+			for(;i < length; i ++){
+				if(isCharTableArray){
+					charTableIndex = Math.floor(Math.random() * sts.charTable[mode].length);
+					startCharCode = sts.charTable[mode][charTableIndex].startCharCode;
+					endCharCode = sts.charTable[mode][charTableIndex].endCharCode;
+				}
+
+				if($.inArray(i, sts.spaceIndexList) === -1 || !sts.options.saveSpace){
+					rndText.push(String.fromCharCode(startCharCode + Math.floor(Math.random() * (endCharCode - startCharCode))));
+				}else{
+					rndText.push(' ');
+				}
 			}
 		}
-
 		return rndText.join('');
+	}
 
-	};
-
-	SuperTextScrambler.prototype.end = function(){
-		var sts = this;
+	function stsEnd(sts){
 		if(sts.options.autoWordBreak){
 			sts.$target
 				.css(sts.defaultCss);
 		}
+		sts.deferred.resolve();
 		sts.$target
 			.trigger('scramblerEnd');
-	};
+	}
 
-	SuperTextScrambler.prototype.allIndexOf = function(string, needle){
+	function allIndexOf(string, needle){
 		var indices = [];
 		for(var pos = string.indexOf(needle); pos !== -1; pos = string.indexOf(needle, pos + 1)) {
 			indices.push(pos);
 		}
 		return indices;
-	};
+	}
 
 	$.extend({
 		'SuperTextScrambler': function (text, options){
@@ -182,17 +232,40 @@
 	});
 	$.fn.extend({
 		'superTextScrambler':function (options){
-			$(this)
-				.each(function(){
-					var $self = $(this);
-					var text = $self.text();
-					if(String(text).length){
-						var sts = $self.data('SuperTextScrambler') || new SuperTextScrambler(text, options);
-						sts.init($self);
-						sts.start();
-						$self.data('SuperTextScrambler', sts);
-					}
-				});
+			options = $.extend(true, defaultOptions, options);
+			var $targets = $(this);
+			var length = $targets.length;
+			var index = 0;
+			var deferred;
+
+			if(options.returnPrimise){
+				deferred = $.Deferred();
+			}
+
+			(function loop(){
+				var $target = $targets.eq(index);
+				var text = $target.text();
+
+				if(index !== 0){
+					options.wait = 0;
+				}
+				var sts = $target.data('SuperTextScrambler') || new SuperTextScrambler($target, text, options);
+
+				sts.init();
+				sts.start()
+					.done(function(){
+						if(index + 1 < length){
+							index += 1;
+							loop();
+						}
+					});
+			})();
+
+			if(options.returnPrimise){
+				return deferred.promise();
+			}else{
+				return this;
+			}
 			return this;
 		}
 	});
