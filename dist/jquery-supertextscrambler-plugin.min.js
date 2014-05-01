@@ -1,5 +1,5 @@
 /*! jQuery Super Text Scrambler 2014-05-01
- *  Vertion : 0.1.0
+ *  Vertion : 1.0.0
  *  Dependencies : jQuery *
  *  Author : MegazalRock (Otto Kamiya)
  *  Copyright (c) 2014 MegazalRock (Otto Kamiya);
