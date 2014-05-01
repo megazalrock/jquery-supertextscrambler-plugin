@@ -1,5 +1,5 @@
 /*! jQuery Super Text Scrambler 2014-05-01
- *  Vertion : 1.0.0
+ *  Vertion : 1.0.1
  *  Dependencies : jQuery *
  *  Author : MegazalRock (Otto Kamiya)
  *  Copyright (c) 2014 MegazalRock (Otto Kamiya);
@@ -100,8 +100,6 @@
 		sts.currentTextLength = 0;
 		sts.currentText = '';
 
-		sts.deferred = $.Deferred();
-
 		if(sts.options.mode === 'auto'){
 			if(/[ぁ-ん]/.test(sts.text) || /[ァ-ン]/.test(sts.text)){
 				sts.options.mode = 'ja';
@@ -131,6 +129,9 @@
 		var delta, now, then = Date.now(), interval = 1000 / sts.options.fps;
 		var textDelta, textThen = then, textInterval = 1000 / sts.options.textFps;
 		var num = Math.floor(sts.options.textFps / 30) + (sts.options.textFps % 30 ? 1 : 0);
+		sts.currentTextLength = 0;
+		sts.currentText = '';
+		sts.deferred = $.Deferred();
 		
 		setTimeout(function(){
 			(function frame(){
@@ -190,13 +191,13 @@
 
 			for(;i < length; i ++){
 				if(isCharTableArray){
-					charTableIndex = Math.floor(Math.random() * sts.charTable[mode].length);
+					charTableIndex = parseInt(Math.random() * sts.charTable[mode].length, 10);
 					startCharCode = sts.charTable[mode][charTableIndex].startCharCode;
 					endCharCode = sts.charTable[mode][charTableIndex].endCharCode;
 				}
 
 				if($.inArray(i, sts.spaceIndexList) === -1 || !sts.options.saveSpace){
-					rndText.push(String.fromCharCode(startCharCode + Math.floor(Math.random() * (endCharCode - startCharCode))));
+					rndText.push(String.fromCharCode(startCharCode + parseInt(Math.random() * (endCharCode - startCharCode), 10)));
 				}else{
 					rndText.push(' ');
 				}
@@ -224,8 +225,8 @@
 	}
 
 	$.extend({
-		'SuperTextScrambler': function (text, options){
-			return new SuperTextScrambler(text, options);
+		'SuperTextScrambler': function ($target, text, options){
+			return new SuperTextScrambler($target, text, options);
 		}
 	});
 	$.fn.extend({
@@ -235,14 +236,22 @@
 			var length = $targets.length;
 			var index = 0;
 			var deferred;
+			var texts = [];
 
 			if(options.returnPrimise){
 				deferred = $.Deferred();
 			}
 
+			$targets
+				.each(function(n){
+					texts[n] = $(this).text();
+					$(this)
+						.empty();
+				});
+
 			(function loop(){
 				var $target = $targets.eq(index);
-				var text = $target.text();
+				var text = texts[index];
 
 				if(index !== 0){
 					options.wait = 0;
