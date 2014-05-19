@@ -40,6 +40,7 @@
 		autoWordBreak: true,
 		saveSpace: true,
 		returnPrimise: false,
+		autoStart: false,
 		addQueue: true
 	};
 
@@ -87,6 +88,14 @@
 			this.charTable.katakana
 		];
 
+		this.modeList = [
+			'en',
+			'ja',
+			'keisen',
+			'auto',
+			'typewriter'
+		];
+
 		this.charTableJaLength = 0;
 
 		for(i in this.charTable.ja){
@@ -94,6 +103,12 @@
 		}
 
 		this.$target = $target;
+
+		this.initialized = false;
+
+		if(typeof options.mode !== 'undefined' && $.inArray(options.mode, this.modeList) === -1){
+			throw 'mode is unexpected. auto, en, ja, keisen, typewriter';
+		}
 	};
 
 	SuperTextScrambler.prototype.init = function(){
@@ -122,8 +137,7 @@
 				});
 		}
 
-		$target
-			.trigger('scramblerStart');
+		sts.initialized = true;
 	};
 
 	SuperTextScrambler.prototype.start = function(){
@@ -131,6 +145,10 @@
 		var delta, now, then = Date.now(), interval = 1000 / sts.options.fps;
 		var textDelta, textThen = then, textInterval = 1000 / sts.options.textFps;
 		var num = Math.floor(sts.options.textFps / 30) + (sts.options.textFps % 30 ? 1 : 0);
+
+		$target
+			.trigger('scramblerStart');
+
 		sts.currentTextLength = 0;
 		sts.currentText = '';
 		sts.deferred = $.Deferred();
@@ -210,8 +228,10 @@
 
 	function stsEnd(sts){
 		if(sts.options.autoWordBreak){
-			sts.$target
-				.css(sts.defaultCss);
+			if(sts.defaultCss){
+				sts.$target
+					.css(sts.defaultCss);
+			}
 		}
 		sts.deferred.resolve();
 		sts.$target
@@ -248,19 +268,20 @@
 				.each(function(n){
 					texts[n] = $(this).text();
 					$(this)
-						.empty();
+						.text('&nbsp;');
 				});
 
 			(function loop(){
 				var $target = $targets.eq(index);
 				var text = texts[index];
-
-				if(index !== 0){
-					options.wait = 0;
-				}
 				var sts = $target.data('SuperTextScrambler') || new SuperTextScrambler($target, text, options);
+				if(index !== 0){
+					sts.options.wait = 0;
+				}
 
-				sts.init();
+				if(!sts.initialized){
+					sts.init();
+				}
 				sts.start()
 					.done(function(){
 						if(index + 1 < length){
@@ -268,6 +289,7 @@
 							loop();
 						}
 					});
+				$target.data('SuperTextScrambler', sts);
 			})();
 
 			if(options.returnPrimise){
