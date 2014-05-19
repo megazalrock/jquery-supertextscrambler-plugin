@@ -248,11 +248,14 @@
 
 	$.extend({
 		'SuperTextScrambler': function ($target, text, options){
+			if(/MSIE\s*[5-8]/.test(navigator.userAgent)){ return false;}
 			return new SuperTextScrambler($target, text, options);
 		}
 	});
 	$.fn.extend({
 		'superTextScrambler':function (options){
+			if(/MSIE\s*[5-8]/.test(navigator.userAgent)){ return this;}
+
 			options = $.extend(true, defaultOptions, options);
 			var $targets = $(this);
 			var length = $targets.length;
