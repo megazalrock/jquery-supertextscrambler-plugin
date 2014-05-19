@@ -265,8 +265,6 @@
 			$targets
 				.each(function(n){
 					texts[n] = $(this).text();
-					$(this)
-						.text('&nbsp;');
 				});
 
 			(function loop(){
