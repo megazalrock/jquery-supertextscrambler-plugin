@@ -1,7 +1,7 @@
 {
   "name": "supertextscrambler",
   "title": "jQuery Super Text Scrambler",
-  "description": "The best jQuery plugin ever.",
+  "description": "テキストにタイプライター的なエフェクトやテキストをスクランブルするエフェクトをかけるプラグイン",
   "version": "1.0.1",
   "homepage": "https://github.com/otto/jquery-supertextscrambler-plugin",
   "author": {
@@ -21,7 +21,7 @@
     }
   ],
   "dependencies": {
-    "jquery": "*"
+    "jquery": "1.9.0 - 2.1.1"
   },
-  "keywords": []
+  "keywords": ["effect"]
 }
